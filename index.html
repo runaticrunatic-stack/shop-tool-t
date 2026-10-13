@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="ja" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#111318">
+<title>亀貴族</title>
+<style>
+:root {
+  --bg: #111318;
+  --panel: #1a1d25;
+  --border: #303541;
+  --text: #f4f4f5;
+  --muted: #a1a1aa;
+  --subtext: #b7bdc9;
+  --input-bg: #12151b;
+  --input-border: #414858;
+  --metric-bg: #232733;
+  --metric-border: #343a49;
+  --total-bg: #1d2b25;
+  --total-border: #315744;
+  --total-text: #86efac;
+  --btn-bg: #86efac;
+  --btn-text: #102017;
+  --btn-sec-bg: #303644;
+  --btn-sec-text: #f4f4f5;
+  color-scheme: dark;
+}
+
+[data-theme="light"] {
+  --bg: #f4f4f6;
+  --panel: #ffffff;
+  --border: #e4e4e7;
+  --text: #18181b;
+  --muted: #71717a;
+  --subtext: #52525b;
+  --input-bg: #fafafa;
+  --input-border: #d4d4d8;
+  --metric-bg: #f9f9fb;
+  --metric-border: #e4e4e7;
+  --total-bg: #f0fdf4;
+  --total-border: #bbf7d0;
+  --total-text: #16a34a;
+  --btn-bg: #16a34a;
+  --btn-text: #ffffff;
+  --btn-sec-bg: #e4e4e7;
+  --btn-sec-text: #18181b;
+  color-scheme: light;
+}
+
+*{box-sizing:border-box}
+body{margin:0;padding:18px 12px 40px;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);transition:background .2s,color .2s}
+.wrap{max-width:1150px;margin:auto}
+.head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px}
+.eyebrow{font-size:11px;letter-spacing:.16em;color:var(--muted);font-weight:700}
+.head h1{font-size:clamp(24px,4vw,32px);margin:4px 0}
+.muted{color:var(--muted);font-size:13px}
+
+/* 全体を左右2カラムのレイアウト構成にする */
+.main-layout{display:grid;grid-template-columns:1fr 280px;gap:16px;align-items:start}
+
+.panel{background:var(--panel);border:1px solid var(--border);border-radius:15px;padding:17px;margin:0 0 13px 0;transition:background .2s,border-color .2s}
+
+/* 右側に追尾する集計エリア */
+.sticky-sidebar{position:sticky;top:18px;display:flex;flex-direction:column;gap:12px}
+
+.metric{background:var(--metric-bg);border:1px solid var(--metric-border);border-radius:12px;padding:14px;text-align:center}
+.metric span{display:block;font-size:12px;color:var(--subtext)}
+.metric strong{display:block;font-size:clamp(22px,2.5vw,28px);margin-top:3px;font-variant-numeric:tabular-nums}
+.metric.total{background:var(--total-bg);border-color:var(--total-border)}
+.metric.total strong{color:var(--total-text);font-size:clamp(24px,3vw,32px)}
+
+h2{font-size:17px;margin:0}
+.toolbar{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+
+/* ヘッダー右側のマスター種類数バッジ */
+.item-count-badge{font-size:12px;color:var(--muted);background:var(--metric-bg);border:1px solid var(--metric-border);padding:4px 10px;border-radius:20px;font-weight:normal}
+
+.actions{display:flex;gap:8px;flex-wrap:wrap}
+button{border:0;border-radius:9px;padding:10px 13px;font:inherit;font-weight:650;cursor:pointer;background:var(--btn-bg);color:var(--btn-text)}
+button:hover{filter:brightness(1.06)}
+button.secondary{background:var(--btn-sec-bg);color:var(--btn-sec-text)}
+input{width:100%;min-width:0;border:1px solid var(--input-border);border-radius:9px;background:var(--input-bg);color:var(--text);padding:8px;font:inherit}
+input:focus{outline:2px solid var(--btn-bg);border-color:var(--btn-bg)}
+
+/* 商品リストのグリッド（左側） */
+.grid-container{display:grid;grid-template-columns:repeat(2, minmax(0, 1fr));gap:12px}
+.shop-card{background:var(--metric-bg);border:1px solid var(--metric-border);border-radius:12px;padding:12px 14px;display:flex;justify-content:space-between;align-items:center;gap:10px}
+
+.product-info{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.product-name{font-weight:650;font-size:15px;word-break:break-all}
+.product-effect{font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+.amount-area{display:flex;align-items:center;gap:10px;flex-shrink:0}
+.price{color:var(--subtext);font-size:13px;white-space:nowrap;width:60px;text-align:right}
+.qty{width:55px;text-align:center;font-size:16px;font-weight:700;padding:6px 2px}
+.subtotal{font-weight:700;font-size:15px;white-space:nowrap;width:70px;text-align:right}
+
+.hint{font-size:12px;color:var(--muted);line-height:1.7;margin:12px 0 0}
+.footer{text-align:center;color:var(--muted);font-size:11px;margin-top:18px}
+
+@media(max-width:960px){
+  .main-layout{grid-template-columns:1fr}
+  .sticky-sidebar{position:static}
+}
+@media(max-width:768px){
+  .grid-container{grid-template-columns:1fr}
+}
+@media(max-width:560px){
+  body{padding:12px 8px}
+  .panel{padding:12px}
+  .toolbar{align-items:flex-start}
+  .toolbar .actions{width:100%}
+  .toolbar .actions button{flex:1}
+}
+</style>
+</head>
+<body><main class="wrap">
+
+<header class="head">
+  <div>
+    <div class="eyebrow">亀貴族 / SHOP TOOL</div>
+    <h1>亀貴族 会計計算ツール🐢</h1>
+    <div class="muted">商品の個数を入力するだけで合計を計算</div>
+  </div>
+  <div>
+    <button class="secondary" id="themeToggle" aria-label="テーマ切り替え">☀️ ライトモード</button>
+  </div>
+</header>
+
+<div class="main-layout">
+  <!-- 左側：商品入力エリア -->
+  <section class="panel">
+    <div class="toolbar">
+      <div style="display:flex; align-items:center; gap:10px;">
+        <h2>会計入力</h2>
+        <span class="item-count-badge" id="masterCount">登録種類: 0種</span>
+      </div>
+      <div class="actions">
+        <button class="secondary" id="clearQty">個数をすべてリセット</button>
+      </div>
+    </div>
+    
+    <div id="productRows" class="grid-container"></div>
+
+    <p class="hint">※商品の追加・変更・削除は、HTMLファイル内の <code>PRODUCTS</code> リストを直接書き換えて行ってください。</p>
+  </section>
+
+  <!-- 右側：追尾する集計エリア -->
+  <aside class="sticky-sidebar">
+    <div class="panel" style="margin:0; padding:14px;">
+      <h2 style="margin-bottom:10px;">集計</h2>
+      <div style="display:flex; flex-direction:column; gap:10px;">
+        <div class="metric">
+          <span>選択中の種類数</span>
+          <strong id="selectedKinds">0 種</strong>
+        </div>
+        <div class="metric total">
+          <span>合計金額</span>
+          <strong id="grandTotal">$0</strong>
+        </div>
+      </div>
+    </div>
+  </aside>
+</div>
+
+<div class="footer">亀貴族 会計ツール</div>
+</main>
+
+<script>
+// ==========================================
+// ▼ ここで商品の追加・編集・削除を行います
+// ==========================================
+const PRODUCTS = [
+  { name: 'ドパ牡蠣', effect: '食料40% / 水分40%', price: 150000 },
+  { name: 'おでん', effect: '食料50% / 水分50%', price: 200000 }
+];
+// ==========================================
+
+const $=id=>document.getElementById(id);
+const fmt=n=>new Intl.NumberFormat('ja-JP',{maximumFractionDigits:0}).format(n);
+
+let productsData = PRODUCTS.map(p => ({ ...p, qty: 0 }));
+
+function render(){
+  const container = $('productRows');
+  container.replaceChildren();
+
+  for(const p of productsData){
+    const card = document.createElement('div');
+    card.className = 'shop-card';
+
+    // 左側：商品名と効果
+    const infoDiv = document.createElement('div');
+    infoDiv.className = 'product-info';
+
+    const nameSpan = document.createElement('span');
+    nameSpan.className = 'product-name';
+    nameSpan.textContent = p.name;
+    infoDiv.append(nameSpan);
+
+    if (p.effect) {
+      const effectSpan = document.createElement('span');
+      effectSpan.className = 'product-effect';
+      effectSpan.textContent = p.effect;
+      infoDiv.append(effectSpan);
+    }
+
+    // 右側：単価・個数入力・小計
+    const amountArea = document.createElement('div');
+    amountArea.className = 'amount-area';
+
+    const priceSpan = document.createElement('div');
+    priceSpan.className = 'price';
+    priceSpan.textContent = '$' + fmt(p.price);
+
+    const qtyInput = document.createElement('input');
+    qtyInput.className = 'qty';
+    qtyInput.type = 'number';
+    qtyInput.min = '0';
+    qtyInput.step = '1';
+    qtyInput.inputMode = 'numeric';
+    qtyInput.value = p.qty;
+    qtyInput.setAttribute('aria-label', p.name + 'の個数');
+
+    qtyInput.addEventListener('input', () => {
+      const val = qtyInput.value;
+      if (val === '') {
+        p.qty = 0;
+      } else {
+        const num = Number(val);
+        if (!Number.isFinite(num) || num < 0) return;
+        p.qty = Math.floor(num);
+      }
+      subtotalSpan.textContent = '$' + fmt(p.qty * p.price);
+      updateTotal();
+    });
+
+    qtyInput.addEventListener('blur', () => {
+      if (qtyInput.value === '') {
+        qtyInput.value = p.qty;
+      }
+    });
+
+    const subtotalSpan = document.createElement('div');
+    subtotalSpan.className = 'subtotal';
+    subtotalSpan.textContent = '$' + fmt(p.qty * p.price);
+
+    amountArea.append(priceSpan, qtyInput, subtotalSpan);
+    card.append(infoDiv, amountArea);
+    container.append(card);
+  }
+  updateTotal();
+}
+
+function updateTotal(){
+  $('masterCount').textContent = '登録種類: ' + PRODUCTS.length + '種';
+  
+  // 個数が1つ以上入力されている商品の種類数を計算
+  const selectedCount = productsData.filter(p => p.qty > 0).length;
+  $('selectedKinds').textContent = selectedCount + ' 種';
+
+  // 合計金額を計算
+  const total = productsData.reduce((sum, p) => sum + p.qty * p.price, 0);
+  $('grandTotal').textContent = '$' + fmt(total);
+}
+
+$('clearQty').onclick = () => {
+  productsData.forEach(p => p.qty = 0);
+  render();
+};
+
+// テーマ切り替え機能
+const THEME_KEY = 'gtarp_shop_theme';
+const themeToggleBtn = $('themeToggle');
+
+function applyTheme(theme) {
+  document.documentElement.setAttribute('data-theme', theme);
+  if (theme === 'light') {
+    themeToggleBtn.textContent = '🌙 ダークモード';
+  } else {
+    themeToggleBtn.textContent = '☀️ ライトモード';
+  }
+  localStorage.setItem(THEME_KEY, theme);
+}
+
+const savedTheme = localStorage.getItem(THEME_KEY) || 'dark';
+applyTheme(savedTheme);
+
+themeToggleBtn.onclick = () => {
+  const currentTheme = document.documentElement.getAttribute('data-theme');
+  const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+  applyTheme(newTheme);
+};
+
+render();
+</script>
+</body>
+</html>
